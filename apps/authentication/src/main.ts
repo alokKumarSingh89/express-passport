@@ -8,6 +8,7 @@ const app = express();
 import * as passport from 'passport';
 import flash = require('express-flash');
 import * as session from 'express-session';
+const MongoStore = require('connect-mongo');
 
 import db from './app/database';
 import UserModel from './app/models/User';
@@ -23,6 +24,13 @@ app.use(
     secret: 'MySecreate',
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: 'mongodb://alok:alok@localhost:27017/express-auth',
+      collectionName: 'sessions',
+    }),
+    cookie: {
+      maxAge: 1000 * 60 * 60,
+    },
   })
 );
 

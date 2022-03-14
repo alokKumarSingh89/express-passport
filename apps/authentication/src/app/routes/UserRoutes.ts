@@ -22,7 +22,6 @@ const checkNotAuthenticated = (
 };
 
 router.get('/', checkAuthenticated, (req, res) => {
-  // console.log(req.user);
   res.render('index', { name: (req.user as { name: string })?.name });
 });
 
