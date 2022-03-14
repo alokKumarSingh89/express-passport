@@ -10,24 +10,34 @@ const checkAuthenticated = (req: express.Request, res, next) => {
   }
   res.redirect('/login');
 };
+const checkNotAuthenticated = (
+  req: express.Request,
+  res: express.Response,
+  next
+) => {
+  if (req.isAuthenticated()) {
+    return res.redirect('/');
+  }
+  return next();
+};
 
 router.get('/', checkAuthenticated, (req, res) => {
   // console.log(req.user);
   res.render('index', { name: (req.user as { name: string })?.name });
 });
 
-router.get('/login', (req, res) => {
+router.get('/login', checkNotAuthenticated, (req, res) => {
   res.render('login');
 });
 
-router.get('/signup', (req, res) => {
+router.get('/signup', checkNotAuthenticated, (req, res) => {
   res.render('register');
 });
 
 router.delete('/logout', (req, res) => {
   res.redirect('/');
 });
-router.post('/signup', async (req, res) => {
+router.post('/signup', checkNotAuthenticated, async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
@@ -45,6 +55,7 @@ router.post('/signup', async (req, res) => {
 });
 router.post(
   '/login',
+  checkNotAuthenticated,
   passport.authenticate('local', {
     failureFlash: true,
     successRedirect: '/',
